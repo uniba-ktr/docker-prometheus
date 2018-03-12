@@ -22,6 +22,7 @@ ADD https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prome
 
 RUN cd /tmp && tar xzf /tmp/prometheus.tar.gz && \
     mv prometheus-* prometheus && \
+    mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
     cd /tmp/prometheus && \
     cp prometheus /bin/prometheus && \
     cp promtool /bin/promtool && \
@@ -30,7 +31,6 @@ RUN cd /tmp && tar xzf /tmp/prometheus.tar.gz && \
     cp -r consoles/ /usr/share/prometheus/consoles/ && \
     cd / && \
     ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ && \
-    mkdir -p /prometheus && \
     chown -R nobody:nogroup etc/prometheus /prometheus
 
 
