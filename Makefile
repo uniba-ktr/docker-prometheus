@@ -5,7 +5,7 @@ VERSION = $(shell cat VERSION)
 #DOCKER_USER = test
 #DOCKER_PASS = test
 ifeq ($(REPO),)
-  REPO = cadvisor
+  REPO = prometheus
 endif
 ifeq ($(CIRCLE_TAG),)
 	TAG = latest
