@@ -6,7 +6,6 @@ ARG QEMU=x86_64
 ADD https://github.com/multiarch/qemu-user-static/releases/download/v2.11.0/qemu-${QEMU}-static /qemu-${QEMU}-static
 RUN chmod +x /qemu-${QEMU}-static
 
-
 # second image to be deployed on dockerhub
 FROM ${IMAGE_TARGET}
 ARG QEMU=x86_64
@@ -18,21 +17,16 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VCS_URL
 
-ADD https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-${PROMETHEUS_ARCH}.tar.gz /tmp/prometheus.tar.gz
-
-RUN cd /tmp && tar xzf /tmp/prometheus.tar.gz && \
-    mv prometheus-* prometheus && \
-    mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
-    cd /tmp/prometheus && \
+RUN mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
+    chown -R nobody:nogroup etc/prometheus /prometheus && \
+    wget -q -O - https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-${PROMETHEUS_ARCH}.tar.gz \
+    | tar -xzf - && \
+    cd /prometheus-* && \
     cp prometheus /bin/prometheus && \
     cp promtool /bin/promtool && \
     cp prometheus.yml /etc/prometheus/prometheus.yml && \
     cp -r console_libraries/ /usr/share/prometheus/console_libraries/ && \
-    cp -r consoles/ /usr/share/prometheus/consoles/ && \
-    cd / && \
-    ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ && \
-    chown -R nobody:nogroup etc/prometheus /prometheus
-
+    cp -r consoles/ /usr/share/prometheus/consoles/
 
 USER       nobody
 EXPOSE     9090
