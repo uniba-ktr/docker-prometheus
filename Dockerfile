@@ -19,7 +19,9 @@ ARG VCS_URL
 
 RUN mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
     chown -R nobody:nogroup etc/prometheus /prometheus && \
-    wget -q -O - https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-${PROMETHEUS_ARCH}.tar.gz \
+    apk update && \
+    apk add curl && \
+    curl -s -L https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-${PROMETHEUS_ARCH}.tar.gz \
     | tar -xzf - && \
     cd /prometheus-* && \
     cp prometheus /bin/prometheus && \
