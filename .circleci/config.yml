@@ -8,28 +8,28 @@ jobs:
       - run: curl -fsSL https://get.docker.com/ | sudo sh
       - run: docker version
   build_amd64:
-    working_directory: ~/docker-cadvisor
+    working_directory: ~/docker-prometheus
     machine: true
     steps:
       - checkout
       - run: make ARCHITECTURES=amd64
       - run: make ARCHITECTURES=amd64 push
   build_i386:
-    working_directory: ~/docker-gogs
+    working_directory: ~/docker-prometheus
     machine: true
     steps:
       - checkout
       - run: make ARCHITECTURES=i386
       - run: make ARCHITECTURES=i386 push
   build_arm32v6:
-    working_directory: ~/docker-cadvisor
+    working_directory: ~/docker-prometheus
     machine: true
     steps:
       - checkout
       - run: make ARCHITECTURES=arm32v6
       - run: make ARCHITECTURES=arm32v6 push
   build_arm64v8:
-    working_directory: ~/docker-cadvisor
+    working_directory: ~/docker-prometheus
     machine: true
     steps:
       - checkout
@@ -40,10 +40,10 @@ jobs:
     steps:
       - checkout
       - run: make manifest
-  #badge:
-  #  machine: true
-  #  steps:
-  #    - run: curl -X POST https://hooks.microbadger.com/images/whatever4711/gitea/2oxGzMVZlKSBC9xolckllXvTm4E=
+  badge:
+    machine: true
+    steps:
+      - run: curl -X POST https://hooks.microbadger.com/images/unibaktr/prometheus/e9fGgQrVSFA65atALdpeFUmGr0Y=
 
 workflows:
   version: 2
@@ -86,9 +86,9 @@ workflows:
           filters:
             tags:
               only: /.*/
-      #- badge:
-      #    requires:
-      #      - manifest
-      #    filters:
-      #      tags:
-      #        only: /.*/
+      - badge:
+         requires:
+           - manifest
+         filters:
+           tags:
+             only: /.*/
