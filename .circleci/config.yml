@@ -5,8 +5,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 17.11.0-ce
       - run: make ARCHITECTURES=amd64
       - run: make ARCHITECTURES=amd64 push
   build_i386:
@@ -14,8 +12,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 17.11.0-ce
       - run: make ARCHITECTURES=i386
       - run: make ARCHITECTURES=i386 push
   build_arm32v6:
@@ -23,8 +19,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 17.11.0-ce
       - run: make ARCHITECTURES=arm32v6
       - run: make ARCHITECTURES=arm32v6 push
   build_arm64v8:
@@ -32,8 +26,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 17.11.0-ce
       - run: make ARCHITECTURES=arm64v8
       - run: make ARCHITECTURES=arm64v8 push
   manifest:
