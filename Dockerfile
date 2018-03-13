@@ -28,7 +28,8 @@ RUN mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
     cp promtool /bin/promtool && \
     cp prometheus.yml /etc/prometheus/prometheus.yml && \
     cp -r console_libraries/ /usr/share/prometheus/console_libraries/ && \
-    cp -r consoles/ /usr/share/prometheus/consoles/
+    cp -r consoles/ /usr/share/prometheus/consoles/ && \
+    rm -r /prometheus-*
 
 USER       nobody
 EXPOSE     9090
