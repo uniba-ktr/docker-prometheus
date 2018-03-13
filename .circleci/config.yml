@@ -1,17 +1,12 @@
 version: 2
 jobs:
-  update:
-    machine: true
-    steps:
-      - run: echo "Updating Docker engine to have multi-stage builds"
-      - run: sudo service docker stop
-      - run: curl -fsSL https://get.docker.com/ | sudo sh
-      - run: docker version
   build_amd64:
     working_directory: ~/docker-prometheus
     machine: true
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 17.11.0-ce
       - run: make ARCHITECTURES=amd64
       - run: make ARCHITECTURES=amd64 push
   build_i386:
@@ -19,6 +14,8 @@ jobs:
     machine: true
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 17.11.0-ce
       - run: make ARCHITECTURES=i386
       - run: make ARCHITECTURES=i386 push
   build_arm32v6:
@@ -26,6 +23,8 @@ jobs:
     machine: true
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 17.11.0-ce
       - run: make ARCHITECTURES=arm32v6
       - run: make ARCHITECTURES=arm32v6 push
   build_arm64v8:
@@ -33,6 +32,8 @@ jobs:
     machine: true
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 17.11.0-ce
       - run: make ARCHITECTURES=arm64v8
       - run: make ARCHITECTURES=arm64v8 push
   manifest:
@@ -49,31 +50,19 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - update:
-          filters:
-            tags:
-              only: /.*/
       - build_amd64:
-          requires:
-            - update
           filters:
             tags:
               only: /.*/
       - build_i386:
-          requires:
-            - update
           filters:
             tags:
               only: /.*/
       - build_arm32v6:
-          requires:
-            - update
           filters:
             tags:
               only: /.*/
       - build_arm64v8:
-          requires:
-            - update
           filters:
             tags:
               only: /.*/
