@@ -1,6 +1,7 @@
 ARCHITECTURES = amd64 i386 arm32v6 arm64v8
 IMAGE_TARGET = alpine
 MULTIARCH = multiarch/qemu-user-static:register
+QEMU_VERSION = v2.11.0
 VERSION = $(shell cat VERSION)
 #DOCKER_USER = test
 #DOCKER_PASS = test
@@ -8,7 +9,7 @@ ifeq ($(REPO),)
   REPO = prometheus
 endif
 ifeq ($(CIRCLE_TAG),)
-	TAG = latest
+	TAG = $(VERSION)
 else
 	TAG = $(CIRCLE_TAG)
 endif
@@ -20,6 +21,7 @@ $(ARCHITECTURES):
 	@docker build \
 			--build-arg IMAGE_TARGET=$@/$(IMAGE_TARGET) \
 			--build-arg QEMU=$(strip $(call qemuarch,$@)) \
+			--build-arg QEMU_VERSION=$(QEMU_VERSION) \
 			--build-arg ARCH=$@ \
 			--build-arg PROMETHEUS_ARCH=$(strip $(call prometheusarch,$@)) \
 			--build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
