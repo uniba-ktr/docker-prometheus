@@ -51,7 +51,7 @@ jobs:
           name: Build image for arm64v8
           command: make ARCHITECTURES=arm64v8
       - run:
-          name: Test image for amd64
+          name: Test image for arm64v8
           command: make ARCHITECTURES=arm64v8 test
       - deploy:
           name: Push image for arm64v8 to dockerhub
