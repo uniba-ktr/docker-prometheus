@@ -46,6 +46,7 @@ jobs:
   build_arm64v8:
     <<: *defaults
     steps:
+      - checkout
       - run:
           name: Build image for arm64v8
           command: make ARCHITECTURES=arm64v8
