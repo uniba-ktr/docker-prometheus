@@ -39,11 +39,26 @@ manifest:
 	@wget -O docker https://6582-88013053-gh.circle-artifacts.com/1/work/build/docker-linux-amd64
 	@chmod +x docker
 	@./docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
-	@./docker manifest create $(REPO):$(TAG) $(foreach arch,$(ARCHITECTURES), $(REPO):linux-$(arch)-$(TAG)) --amend
-	@$(foreach arch,$(ARCHITECTURES), ./docker manifest annotate $(REPO):$(TAG) $(REPO):linux-$(arch)-$(TAG) --os linux $(strip $(call convert_variants,$(arch)));)
+	@./docker manifest create $(REPO):$(TAG) \
+			$(foreach arch,$(ARCHITECTURES), $(REPO):linux-$(arch)-$(TAG)) --amend
+	@$(foreach arch,$(ARCHITECTURES), ./docker manifest annotate \
+			$(REPO):$(TAG) $(REPO):linux-$(arch)-$(TAG) \
+			--os linux $(strip $(call convert_variants,$(arch)));)
 	@./docker manifest push $(REPO):$(TAG)
 	@./docker logout
 	@rm -f docker
+
+test:
+	@docker network create -d bridge trial
+	@$(foreach arch,$(ARCHITECTURES), \
+			docker run --network trial -p 9090:9090 -d \
+			--name=prometheus $(REPO):linux-$(arch)-$(TAG); \
+			sleep 10; \
+			docker run --network trial \
+				jwilder/dockerize dockerize -wait tcp://prometheus:9090 -timeout 300s; \
+			curl -sSL --retry 10 --retry-delay 10 localhost:9090 | grep prometheus; \
+			docker rm -f prometheus;)
+	@docker network rm trial
 
 # Needed convertions for different architecture naming schemes
 # Convert qemu archs to naming scheme of https://github.com/multiarch/qemu-user-static/releases
