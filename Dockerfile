@@ -1,18 +1,6 @@
-ARG IMAGE_TARGET=alpine
 
-# first image to download qemu and make it executable
-FROM alpine AS qemu
-ARG QEMU=x86_64
-ARG QEMU_VERSION=v2.11.0
-ADD https://github.com/multiarch/qemu-user-static/releases/download/${QEMU_VERSION}/qemu-${QEMU}-static /qemu-${QEMU}-static
-RUN chmod +x /qemu-${QEMU}-static
-
-# second image to be deployed on dockerhub
-FROM ${IMAGE_TARGET}
-ARG QEMU=x86_64
-COPY --from=qemu /qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
-ARG ARCH=amd64
-ARG PROMETHEUS_ARCH=amd64
+FROM alpine
+ARG TARGETPLATFORM=amd64
 ARG VERSION=2.2.1
 ARG BUILD_DATE
 ARG VCS_REF
@@ -22,7 +10,7 @@ RUN mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
     chown -R nobody:nogroup etc/prometheus /prometheus && \
     apk update && \
     apk add curl && \
-    curl -s -L https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-${PROMETHEUS_ARCH}.tar.gz \
+    curl -s -L https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-$(echo ${TARGETPLATFORM} | sed -e "s|arm32v5|armv5|g" -e "s|arm32v6|armv6|g" -e "s|arm32v7|armv7|g" -e "s|arm64.*|arm64|g" -e "s|i386|386|g").tar.gz \
     | tar -xzf - && \
     cd /prometheus-* && \
     cp prometheus /bin/prometheus && \
@@ -46,7 +34,7 @@ LABEL de.uniba.ktr.prometheus.version=$VERSION \
       de.uniba.ktr.prometheus.name="Prometheus" \
       de.uniba.ktr.prometheus.docker.cmd="docker run --publish=9090:9090 --detach=true --name=prometheus unibaktr/prometheus" \
       de.uniba.ktr.prometheus.vendor="Marcel Grossmann" \
-      de.uniba.ktr.prometheus.architecture=$ARCH \
+      de.uniba.ktr.prometheus.architecture=$TARGETPLATFORM \
       de.uniba.ktr.prometheus.vcs-ref=$VCS_REF \
       de.uniba.ktr.prometheus.vcs-url=$VCS_URL \
       de.uniba.ktr.prometheus.build-date=$BUILD_DATE
