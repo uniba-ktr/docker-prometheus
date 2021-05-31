@@ -1,17 +1,17 @@
-
 FROM alpine
-ARG TARGETPLATFORM=amd64
 ARG VERSION=2.2.1
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VCS_URL
+ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG TARGETVARIANT
+
+ADD https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-${TARGETARCH}${TARGETVARIANT}.tar.gz /prometheus-${VERSION}.linux-${TARGETARCH}${TARGETVARIANT}.tar.gz
 
 RUN mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
     chown -R nobody:nogroup etc/prometheus /prometheus && \
-    apk update && \
-    apk add curl && \
-    curl -s -L https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-$(echo ${TARGETPLATFORM} | sed -e "s|arm32v5|armv5|g" -e "s|arm32v6|armv6|g" -e "s|arm32v7|armv7|g" -e "s|arm64.*|arm64|g" -e "s|i386|386|g").tar.gz \
-    | tar -xzf - && \
+    tar -xzf /prometheus-${VERSION}.linux-${TARGETARCH}${TARGETVARIANT}.tar.gz && \
     cd /prometheus-* && \
     cp prometheus /bin/prometheus && \
     cp promtool /bin/promtool && \
