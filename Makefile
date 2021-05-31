@@ -37,6 +37,7 @@ build:
 	@docker logout
 
 clean:
+	@docker buildx rm $(builder) | true
 	@docker context rm $(builder) | true
 
 # To test the "buildx" locally
